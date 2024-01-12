@@ -6,7 +6,7 @@ const rekognition = require("../aws.config");
 router.post("/classify", async function (req, res, next) {
   // Your code starts here
 
-  // Check if the file is missing
+  // if file is missing
   if (!req.files || !req.files?.file) {
     return res
       .status(400)
@@ -27,7 +27,7 @@ router.post("/classify", async function (req, res, next) {
     labels = response.Labels.map((label) => label.Name);
 
     res.status(200).json({
-      message: "list of Labels",
+      message: "List of labels",
       success: true,
       labels,
     });
