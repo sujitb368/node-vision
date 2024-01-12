@@ -1,17 +1,45 @@
-var express = require('express');
+var express = require("express");
 var router = express.Router();
 
-router.post('/classify', function(req, res, next) {
-  // DON'T return the hardcoded response after implementing the backend
-  let response = ["shoe", "red", "nike"];
+const rekognition = require("../aws.config");
 
-  // Your code starts here //
+router.post("/classify", async function (req, res, next) {
+  // Your code starts here
+
+  // Check if the file is missing
+  if (!req.files || !req.files?.file) {
+    return res
+      .status(400)
+      .json({ message: "File is missing in the request", success: false });
+  }
+
+  //image file data
+  const imageBuffer = req.files.file.data;
+
+  const params = {
+    Image: {
+      Bytes: imageBuffer,
+    },
+  };
+
+  try {
+    const response = await rekognition.detectLabels(params).promise();
+    labels = response.Labels.map((label) => label.Name);
+
+    res.status(200).json({
+      message: "list of Labels",
+      success: true,
+      labels,
+    });
+  } catch (error) {
+    res.status(500).json({
+      message: "Internal Server Error",
+      success: false,
+      error: error.message,
+    });
+  }
 
   // Your code ends here //
-
-  res.json({
-    "labels": response
-  });
 });
 
 module.exports = router;
